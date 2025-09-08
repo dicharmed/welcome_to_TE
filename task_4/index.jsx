@@ -1,7 +1,16 @@
-import { useState } from "react";
+import React, { ReactNode, useState } from "react";
 
-export const Block1 = ({ mouseEnterCallbak, imgSrc, imgAlt }) => {
-  const [isActive, setActive] = useState(false);
+// Базовый блок: общая логика активного состояния и обработчик наведения
+type BaseBlockProps = {
+  mouseEnterCallbak: () => void;
+  children: ReactNode;
+};
+
+const BaseBlock: React.FC<BaseBlockProps> = ({
+  mouseEnterCallbak,
+  children,
+}) => {
+  const [isActive, setActive] = useState<boolean>(false);
 
   const mouseEnterHandler = () => {
     setActive(true);
@@ -10,39 +19,57 @@ export const Block1 = ({ mouseEnterCallbak, imgSrc, imgAlt }) => {
 
   return (
     <div onMouseEnter={mouseEnterHandler} className={isActive ? "active" : ""}>
-      <img src={imgSrc} alt={imgAlt} />
+      {children}
     </div>
   );
 };
 
-export const Block2 = ({ mouseEnterCallbak, content }) => {
-  const [isActive, setActive] = useState(false);
+// Узкоспециализированные блоки: передают свой контент как children в BaseBlock
+export type Block1Props = {
+  mouseEnterCallbak: () => void;
+  imgSrc: string;
+  imgAlt?: string;
+};
 
-  const mouseEnterHandler = () => {
-    setActive(true);
-    mouseEnterCallbak();
+export const Block1: React.FC<Block1Props> = ({
+  mouseEnterCallbak,
+  imgSrc,
+  imgAlt,
+}) => (
+  <BaseBlock mouseEnterCallbak={mouseEnterCallbak}>
+    <img src={imgSrc} alt={imgAlt} />
+  </BaseBlock>
+);
+
+export type Block2Props = {
+  mouseEnterCallbak: () => void;
+  content: ReactNode;
+};
+
+export const Block2: React.FC<Block2Props> = ({
+  mouseEnterCallbak,
+  content,
+}) => (
+  <BaseBlock mouseEnterCallbak={mouseEnterCallbak}>
+    <p>{content}</p>
+  </BaseBlock>
+);
+
+export type Block3Props = {
+  mouseEnterCallbak: () => void;
+  userData: {
+    country: string;
+    street: string;
   };
-
-  return (
-    <div onMouseEnter={mouseEnterHandler} className={isActive ? "active" : ""}>
-      <p>{content}</p>
-    </div>
-  );
 };
 
-export const Block3 = ({ mouseEnterCallbak, userData }) => {
-  const [isActive, setActive] = useState(false);
-
-  const mouseEnterHandler = () => {
-    setActive(true);
-    mouseEnterCallbak();
-  };
-
-  return (
-    <div onMouseEnter={mouseEnterHandler} className={isActive ? "active" : ""}>
-      <address>
-        country: {userData.country}, street: {userData.street}
-      </address>
-    </div>
-  );
-};
+export const Block3: React.FC<Block3Props> = ({
+  mouseEnterCallbak,
+  userData,
+}) => (
+  <BaseBlock mouseEnterCallbak={mouseEnterCallbak}>
+    <address>
+      country: {userData.country}, street: {userData.street}
+    </address>
+  </BaseBlock>
+);
